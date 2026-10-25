@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Síťové protokoly — referenční list</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+
+  --bg:#E3E5E2;
+  --panel:#F2F3F1;
+  --panel-2:#DADCD8;
+  --ink:#191D1C;
+  --ink-2:#4E5856;
+  --rule:#B7BBB7;
+  --rule-2:#9AA09C;
+  --accent:#2F5E86;
+  --on-accent:#F2F3F1;
+
+  --f-addr:#2F5E86;
+  --f-addr-bg:#CFDCE6;
+  --f-len:#5B6B33;
+  --f-len-bg:#DAE1C8;
+  --f-ctrl:#8A4A22;
+  --f-ctrl-bg:#EBD9C9;
+  --f-chk:#6B3A63;
+  --f-chk-bg:#E2D2E0;
+  --f-id:#7A5E1E;
+  --f-id-bg:#E8DFC3;
+
+  --sans:"Archivo",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --nav-h:50px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161A;
+    --panel:#192026;
+    --panel-2:#222B32;
+    --ink:#DCE2E3;
+    --ink-2:#8E9BA1;
+    --rule:#2C3840;
+    --rule-2:#415059;
+    --accent:#86B2D6;
+    --on-accent:#11161A;
+
+    --f-addr:#8FB6D6; --f-addr-bg:#1B2B38;
+    --f-len:#A8BE7E;  --f-len-bg:#232B1C;
+    --f-ctrl:#D79A6C; --f-ctrl-bg:#32241A;
+    --f-chk:#C4A0C0;  --f-chk-bg:#2B1F2A;
+    --f-id:#D4BC78;   --f-id-bg:#2E2718;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161A; --panel:#192026; --panel-2:#222B32; --ink:#DCE2E3; --ink-2:#8E9BA1;
+  --rule:#2C3840; --rule-2:#415059; --accent:#86B2D6; --on-accent:#11161A;
+  --f-addr:#8FB6D6; --f-addr-bg:#1B2B38; --f-len:#A8BE7E; --f-len-bg:#232B1C;
+  --f-ctrl:#D79A6C; --f-ctrl-bg:#32241A; --f-chk:#C4A0C0; --f-chk-bg:#2B1F2A;
+  --f-id:#D4BC78; --f-id-bg:#2E2718;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + var(--nav-h) + 8px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none !important;animation:none !important}}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--panel);z-index:30;border-bottom:1px solid var(--rule)}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--panel);border-bottom:1px solid var(--rule-2)}
+.nav__in{max-width:1180px;margin:0 auto;padding:0 18px;height:var(--nav-h);display:flex;align-items:center;gap:16px;overflow-x:auto;scrollbar-width:none}
+.nav__in::-webkit-scrollbar{display:none}
+.nav__t{font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:.02em;white-space:nowrap;padding-right:6px;border-right:1px solid var(--rule-2);margin-right:2px}
+.nav a{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);text-decoration:none;white-space:nowrap;padding:4px 0;border-bottom:1px solid transparent}
+.nav a:hover{color:var(--ink);border-bottom-color:var(--accent)}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+section{padding:46px 0;border-top:1px solid var(--rule)}
+h1{font-size:clamp(27px,4vw,41px);font-weight:600;letter-spacing:-.025em;line-height:1.1;margin:0;max-width:20ch}
+h2{font-size:clamp(19px,2.4vw,24px);font-weight:600;letter-spacing:-.015em;margin:0;display:flex;align-items:baseline;gap:10px}
+h2 .num{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--ink-2);letter-spacing:0}
+h3{font-size:15px;font-weight:600;margin:0}
+p{margin:10px 0;max-width:74ch;color:var(--ink-2)}
+p.k{color:var(--ink)}
+.sec-head{margin-bottom:22px}
+.mono{font-family:var(--mono)}
+a.ext{color:var(--accent)}
+
+/* hlavička dokumentu */
+.doc-head{padding:38px 0 34px}
+.doc-meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:4px 20px;margin-top:20px;padding-top:12px;border-top:1px solid var(--rule)}
+
+/* panely */
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:3px}
+.panel__hd{padding:9px 14px;border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.panel__bd{padding:14px}
+
+/* tlačítka */
+button{font:inherit;color:inherit}
+.tab,.btn{
+  font-family:var(--mono);font-size:12.5px;background:transparent;border:1px solid var(--rule-2);
+  color:var(--ink-2);padding:5px 10px;border-radius:2px;cursor:pointer;
+}
+.tab:hover,.btn:hover{color:var(--ink);border-color:var(--ink-2)}
+.tab[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.btn--go{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:500}
+.btn--go:hover{color:var(--on-accent);filter:brightness(1.08)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+/* §1 bitová mřížka */
+.gridwrap{overflow-x:auto}
+.bitgrid{min-width:560px}
+.ruler{display:grid;grid-template-columns:repeat(32,1fr);font-family:var(--mono);font-size:10px;color:var(--ink-2);margin-bottom:3px}
+.ruler span{grid-column:span 4;border-left:1px solid var(--rule);padding-left:3px}
+.brow{display:grid;grid-template-columns:repeat(32,1fr);gap:2px;margin-bottom:2px}
+.bf{
+  border:1px solid var(--rule-2);background:var(--panel-2);border-radius:2px;
+  padding:6px 5px;min-height:46px;cursor:pointer;text-align:left;overflow:hidden;
+}
+.bf__t{display:block;font-size:11.5px;font-weight:500;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bf__b{display:block;font-family:var(--mono);font-size:10px;color:var(--ink-2);margin-top:2px}
+.bf[data-c="addr"]{background:var(--f-addr-bg);border-color:var(--f-addr);color:var(--f-addr)}
+.bf[data-c="len"]{background:var(--f-len-bg);border-color:var(--f-len);color:var(--f-len)}
+.bf[data-c="ctrl"]{background:var(--f-ctrl-bg);border-color:var(--f-ctrl);color:var(--f-ctrl)}
+.bf[data-c="chk"]{background:var(--f-chk-bg);border-color:var(--f-chk);color:var(--f-chk)}
+.bf[data-c="id"]{background:var(--f-id-bg);border-color:var(--f-id);color:var(--f-id)}
+.bf[data-c="pad"]{color:var(--ink-2);border-style:dashed;cursor:default}
+.bf[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:-2px}
+.bf__t,.bf__b{pointer-events:none}
+
+.f1{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px}
+@media (min-width:960px){.f1{grid-template-columns:1.6fr 1fr;align-items:start}}
+
+.hex{font-family:var(--mono);font-size:12.5px;line-height:1.9;word-spacing:.1em;display:flex;flex-wrap:wrap;gap:0 2px}
+.hb{padding:0 2px;border-radius:2px;cursor:pointer;border:1px solid transparent}
+.hb:hover{border-color:var(--rule-2)}
+.hb.on{background:var(--ink);color:var(--bg)}
+.hex__off{color:var(--ink-2);width:100%;margin-top:6px;font-size:11px}
+
+.fdet dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-family:var(--mono);font-size:12px}
+.fdet dt{color:var(--ink-2)}
+.fdet dd{margin:0}
+.fdet h3{margin-bottom:8px;font-size:16px;letter-spacing:-.01em}
+.fdet p{font-size:14px;margin:10px 0 0;max-width:46ch}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-family:var(--mono);font-size:11px;color:var(--ink-2);margin-top:12px}
+.legend i{display:inline-block;width:9px;height:9px;border:1px solid;margin-right:4px;vertical-align:-1px}
+
+/* §2 příznaky */
+.flags{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;min-width:460px}
+.flag{border:1px solid var(--rule-2);background:var(--panel-2);border-radius:2px;padding:9px 4px;text-align:center;cursor:pointer}
+.flag[aria-pressed="true"]{background:var(--f-ctrl-bg);border-color:var(--f-ctrl);color:var(--f-ctrl)}
+.flag__n{display:block;font-family:var(--mono);font-size:13px;font-weight:700}
+.flag__m{display:block;font-family:var(--mono);font-size:10px;color:var(--ink-2);margin-top:2px}
+.flag[aria-pressed="true"] .flag__m{color:inherit}
+.flagout{display:flex;flex-wrap:wrap;gap:6px 26px;font-family:var(--mono);font-size:13px;margin-top:14px;padding-top:12px;border-top:1px solid var(--rule)}
+.flagout b{font-weight:700}
+.flagout span{color:var(--ink-2)}
+
+/* §3 stavový automat */
+.sm{display:grid;grid-template-columns:1fr;gap:14px}
+@media (min-width:900px){.sm{grid-template-columns:1.1fr 1fr;align-items:start}}
+.states{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:4px}
+.st{
+  border:1px solid var(--rule);background:var(--panel-2);border-radius:2px;padding:7px 8px;
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-2);
+}
+.st b{display:block;font-size:12px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.st.cur{background:var(--f-ctrl-bg);border-color:var(--f-ctrl);color:var(--f-ctrl)}
+.st.cur b{color:var(--f-ctrl)}
+.st.seen{border-color:var(--rule-2);background:var(--panel)}
+.st.cur b::after{content:" ◂";}
+.ev{display:flex;flex-direction:column;gap:5px}
+.ev button{
+  text-align:left;font-family:var(--mono);font-size:12px;background:var(--panel-2);
+  border:1px solid var(--rule-2);border-radius:2px;padding:8px 10px;cursor:pointer;line-height:1.4;
+}
+.ev button:hover{border-color:var(--accent);color:var(--accent)}
+.ev small{display:block;font-family:var(--sans);font-size:12px;color:var(--ink-2);margin-top:2px}
+.ev button:hover small{color:inherit}
+.log{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);margin-top:12px;padding-top:10px;border-top:1px solid var(--rule);max-height:132px;overflow:auto}
+.log div{padding:1px 0}
+.log b{color:var(--ink);font-weight:500}
+
+/* §4 kalkulačka */
+.calc{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:820px){.calc{grid-template-columns:270px 1fr;align-items:start}}
+.ctrl{display:flex;flex-direction:column;gap:12px;font-family:var(--mono);font-size:12.5px}
+.ctrl label{display:flex;flex-direction:column;gap:5px;color:var(--ink-2)}
+.ctrl select,.ctrl input[type=number]{
+  font:inherit;font-family:var(--mono);background:var(--panel-2);color:var(--ink);
+  border:1px solid var(--rule-2);border-radius:2px;padding:6px 8px;
+}
+.ctrl .row{display:flex;align-items:center;gap:8px;color:var(--ink)}
+.bar{display:flex;height:44px;border:1px solid var(--rule-2);border-radius:2px;overflow:hidden;font-family:var(--mono);font-size:11px}
+.bar div{display:grid;place-items:center;border-right:1px solid var(--rule-2);overflow:hidden;white-space:nowrap}
+.bar div:last-child{border-right:0}
+.b-eth{background:var(--f-id-bg);color:var(--f-id)}
+.b-ip{background:var(--f-addr-bg);color:var(--f-addr)}
+.b-tcp{background:var(--f-ctrl-bg);color:var(--f-ctrl)}
+.b-opt{background:var(--f-chk-bg);color:var(--f-chk)}
+.b-pay{background:var(--f-len-bg);color:var(--f-len)}
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px;margin-top:14px}
+.ro{border-left:2px solid var(--rule-2);padding-left:9px}
+.ro b{display:block;font-family:var(--mono);font-size:19px;font-weight:700;letter-spacing:-.02em}
+.ro span{font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+
+/* §5 RTT */
+.rtts{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:860px){.rtts{grid-template-columns:repeat(3,1fr)}}
+.rtt{background:var(--panel);border:1px solid var(--rule);border-radius:3px;padding:14px}
+.rtt h3{font-family:var(--mono);font-size:13px;letter-spacing:-.01em}
+.rtt__n{font-family:var(--mono);font-size:26px;font-weight:700;letter-spacing:-.03em;margin:6px 0 10px}
+.rtt ol{margin:0;padding-left:17px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);line-height:1.75}
+.rtt li::marker{color:var(--rule-2)}
+
+/* §6 tabulka */
+.tfilter{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;align-items:center}
+.tfilter input{font:inherit;font-family:var(--mono);font-size:12.5px;padding:6px 9px;border:1px solid var(--rule-2);border-radius:2px;background:var(--panel);color:var(--ink);flex:1 1 180px;min-width:0}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{
+  text-align:left;font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--ink-2);
+  padding:7px 10px;border-bottom:1px solid var(--rule-2);cursor:pointer;white-space:nowrap;
+}
+thead th:hover{color:var(--ink)}
+tbody td{padding:7px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+tbody tr:hover{background:var(--panel)}
+td.m{font-family:var(--mono);font-size:12px;white-space:nowrap}
+td.n{font-weight:600}
+.tscroll{overflow-x:auto}
+.tscroll table{min-width:720px}
+tbody tr.grp td{
+  background:var(--panel-2);border-bottom:1px solid var(--rule-2);padding:9px 10px;
+}
+tbody tr.grp b{font-family:var(--mono);font-size:12px;letter-spacing:.01em}
+tbody tr.grp span{color:var(--ink-2);font-size:12.5px}
+tbody tr.grp:hover td{background:var(--panel-2)}
+.count{font-family:var(--mono);font-size:11.5px;color:var(--ink-2);white-space:nowrap}
+tbody tr.t1 td:first-child{box-shadow:inset 3px 0 0 var(--f-ctrl)}
+tbody tr.t1 td.n{color:var(--f-ctrl);font-weight:600}
+tbody tr.t1 td{background:color-mix(in srgb,var(--f-ctrl-bg) 38%,transparent)}
+tbody tr.t2 td:first-child{box-shadow:inset 3px 0 0 var(--rule-2)}
+tbody tr.t3 td:first-child{box-shadow:inset 3px 0 0 transparent}
+tbody tr.t3 td{color:var(--ink-2)}
+tbody tr.t3 td.n{font-weight:400}
+.tiers{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);margin:0 0 14px}
+.tiers i{display:inline-block;width:3px;height:12px;margin-right:6px;vertical-align:-2px}
+table.layers td.m{white-space:normal}
+table.layers tr.tcpip-net td:first-child{border-left:2px solid var(--f-addr)}
+
+footer{padding:30px 0 56px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav__in">
+  <span class="nav__t">PROTOKOLY · REF</span>
+  <a href="#hlavicky">§1 hlavičky</a>
+  <a href="#priznaky">§2 příznaky</a>
+  <a href="#stavy">§3 stavy TCP</a>
+  <a href="#mtu">§4 MTU/MSS</a>
+  <a href="#rtt">§5 navázání</a>
+  <a href="#vrstvy">§6 mapa vrstev</a>
+  <a href="#rejstrik">§7 katalog</a>
+</div></nav>
+
+<main class="wrap">
+
+  <header class="doc-head">
+    <h1>Hlavičky, stavy a režie zásobníku TCP/IP</h1>
+    <p class="k">Referenční list k rozboru paketu TCP SYN odeslaného z 192.168.1.14:51250 na 93.184.216.34:443. Všechny mřížky, hexdump i stavový automat pracují s tímto jedním vzorkem.</p>
+    <div class="doc-meta">
+      <span>RFC 791 · 793 · 768 · 1122 · 9293</span>
+      <span>Ethernet II / IPv4 / TCP</span>
+      <span>hodnoty big-endian</span>
+    </div>
+  </header>
+
+  <!-- §1 -->
+  <section id="hlavicky">
+    <div class="sec-head">
+      <h2><span class="num">§1</span>Struktura hlaviček po bitech</h2>
+      <p>Mřížka je 32 bitů široká, tak jak se hlavičky kreslí v RFC. Klikněte na pole v mřížce nebo na bajt v hexdumpu — výběr se propojí.</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel__hd">
+        <div id="protoTabs" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <span class="mono" style="font-size:12px;color:var(--ink-2)" id="protoMeta"></span>
+      </div>
+      <div class="panel__bd">
+        <div class="gridwrap">
+          <div class="bitgrid">
+            <div class="ruler"><span>0</span><span>4</span><span>8</span><span>12</span><span>16</span><span>20</span><span>24</span><span>28</span></div>
+            <div id="bitRows"></div>
+          </div>
+        </div>
+        <div class="legend">
+          <span><i style="background:var(--f-addr-bg);border-color:var(--f-addr)"></i>adresace</span>
+          <span><i style="background:var(--f-len-bg);border-color:var(--f-len)"></i>délky a offsety</span>
+          <span><i style="background:var(--f-ctrl-bg);border-color:var(--f-ctrl)"></i>řízení spojení</span>
+          <span><i style="background:var(--f-chk-bg);border-color:var(--f-chk)"></i>integrita</span>
+          <span><i style="background:var(--f-id-bg);border-color:var(--f-id)"></i>identifikace</span>
+        </div>
+
+        <div class="f1">
+          <div>
+            <h3 style="margin-bottom:8px">Hexdump vzorku</h3>
+            <div class="hex" id="hexdump"></div>
+          </div>
+          <div class="fdet" id="fieldDetail"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §2 -->
+  <section id="priznaky">
+    <div class="sec-head">
+      <h2><span class="num">§2</span>Příznakový bajt TCP</h2>
+      <p>Devátý a desátý bajt hlavičky TCP nese datový offset, rezervu a osm řídicích bitů. Přepínáním bitů se mění hodnota bajtu i význam segmentu.</p>
+    </div>
+    <div class="panel"><div class="panel__bd">
+      <div style="overflow-x:auto"><div class="flags" id="flags"></div></div>
+      <div class="flagout">
+        <span>binárně <b class="mono" id="fBin">0000 0010</b></span>
+        <span>hex <b class="mono" id="fHex">0x02</b></span>
+        <span>dec <b class="mono" id="fDec">2</b></span>
+        <span>význam <b id="fName">SYN — žádost o navázání spojení</b></span>
+      </div>
+      <p id="fNote" style="margin-top:12px;font-size:14px"></p>
+    </div></div>
+  </section>
+
+  <!-- §3 -->
+  <section id="stavy">
+    <div class="sec-head">
+      <h2><span class="num">§3</span>Stavový automat TCP</h2>
+      <p>Jedenáct stavů podle RFC 9293. Vyberte roli, pak klikejte na události — nabízejí se jen přechody, které jsou z aktuálního stavu definované.</p>
+    </div>
+    <div class="panel">
+      <div class="panel__hd">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="tab" id="roleA" aria-pressed="true">aktivní otevření (klient)</button>
+          <button class="tab" id="roleP" aria-pressed="false">pasivní otevření (server)</button>
+        </div>
+        <button class="btn" id="smReset">reset na CLOSED</button>
+      </div>
+      <div class="panel__bd">
+        <div class="sm">
+          <div>
+            <div class="states" id="states"></div>
+            <div class="log" id="smLog"></div>
+          </div>
+          <div>
+            <h3 style="margin-bottom:8px">Dostupné přechody</h3>
+            <div class="ev" id="events"></div>
+            <p id="smNote" style="font-size:13.5px"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §4 -->
+  <section id="mtu">
+    <div class="sec-head">
+      <h2><span class="num">§4</span>Režie zapouzdření, MTU a MSS</h2>
+      <p>Užitečná data jsou to, co zbude z MTU po odečtení všech hlaviček. Volby TCP i tunel se platí z téhož rozpočtu.</p>
+    </div>
+    <div class="panel"><div class="panel__bd">
+      <div class="calc">
+        <div class="ctrl">
+          <label>MTU linky (B)
+            <select id="mtuSel">
+              <option value="1500">1500 — Ethernet</option>
+              <option value="1492">1492 — PPPoE</option>
+              <option value="1480">1480 — GRE tunel</option>
+              <option value="1420">1420 — WireGuard</option>
+              <option value="9000">9000 — jumbo rámec</option>
+              <option value="1280">1280 — minimum IPv6</option>
+            </select>
+          </label>
+          <label>Síťová vrstva
+            <select id="ipSel">
+              <option value="20">IPv4 — 20 B</option>
+              <option value="40">IPv6 — 40 B</option>
+            </select>
+          </label>
+          <label class="row"><input type="checkbox" id="optTs" checked> volba Timestamps (+12 B)</label>
+          <label class="row"><input type="checkbox" id="optSack"> volba SACK permitted (+4 B)</label>
+          <label class="row"><input type="checkbox" id="optWs"> volba Window scale (+4 B)</label>
+          <label>Objem k přenesení (kB)
+            <input type="number" id="payload" value="500" min="1" max="100000">
+          </label>
+        </div>
+        <div>
+          <div class="bar" id="bar"></div>
+          <div class="readout" id="readout"></div>
+          <p id="mtuNote" style="font-size:13.5px;margin-top:16px"></p>
+        </div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- §5 -->
+  <section id="rtt">
+    <div class="sec-head">
+      <h2><span class="num">§5</span>Cena za navázání spojení</h2>
+      <p>Kolik okružních dob uplyne, než může odejít první byte aplikačních dat. Rozdíl mezi sloupci je důvod, proč vznikl QUIC.</p>
+    </div>
+    <div class="rtts" id="rtts"></div>
+    <p style="margin-top:16px">TIME_WAIT po uzavření drží čtveřici adres a portů obsazenou po dobu 2×MSL (v Linuxu 60 s). U serveru s vysokou mírou krátkých spojení to je první zdroj vyčerpání efemérních portů — řeší se znovupoužitím spojení, ne vypínáním TIME_WAIT.</p>
+  </section>
+
+  <!-- §6 -->
+  <section id="vrstvy">
+    <div class="sec-head">
+      <h2><span class="num">§6</span>Mapa vrstev — co kde sídlí</h2>
+      <p>Model ISO/OSI vlevo, reálně používaný model TCP/IP vedle něj. Vrstvy 5 až 7 se v praxi nerozlišují, proto se mluví prostě o aplikační vrstvě.</p>
+    </div>
+    <div class="tscroll"><table class="layers">
+      <thead><tr><th>OSI</th><th>TCP/IP</th><th>jednotka</th><th>adresuje podle</th><th>zařízení</th><th>typické protokoly</th></tr></thead>
+      <tbody>
+        <tr><td class="n">7 Aplikační</td><td class="m" rowspan="3">Aplikační</td><td class="m">data</td><td class="m">URL, jméno, port služby</td><td class="m">brána, proxy, WAF</td><td class="m">HTTP, DNS, SMTP, SSH, DHCP</td></tr>
+        <tr><td class="n">6 Prezentační</td><td class="m">data</td><td class="m">—</td><td class="m">—</td><td class="m">TLS, kódování znaků, komprese</td></tr>
+        <tr><td class="n">5 Relační</td><td class="m">data</td><td class="m">identifikátor relace</td><td class="m">—</td><td class="m">SIP, RPC, NetBIOS</td></tr>
+        <tr><td class="n">4 Transportní</td><td class="m">Transportní</td><td class="m">segment / datagram</td><td class="m">číslo portu</td><td class="m">stavový firewall, L4 balancer</td><td class="m">TCP, UDP, QUIC, SCTP</td></tr>
+        <tr class="tcpip-net"><td class="n">3 Síťová</td><td class="m">Internetová</td><td class="m">paket</td><td class="m">IP adresa</td><td class="m">router, L3 switch</td><td class="m">IPv4, IPv6, ICMP, OSPF, BGP</td></tr>
+        <tr><td class="n">2 Linková</td><td class="m" rowspan="2">Síťového rozhraní</td><td class="m">rámec</td><td class="m">MAC adresa</td><td class="m">switch, přístupový bod</td><td class="m">Ethernet II, 802.11, 802.1Q, ARP, STP</td></tr>
+        <tr><td class="n">1 Fyzická</td><td class="m">bit / symbol</td><td class="m">—</td><td class="m">opakovač, media konvertor, SFP</td><td class="m">1000BASE-T, 10GBASE-SR, kódování linky</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin-top:14px">Pravidlo, které z tabulky plyne: čím níž protokol je, tím kratší má dosah. Rámec žije jen mezi dvěma rozhraními, paket urazí celou cestu, segment existuje jen pro dva koncové body a routery po cestě do něj nevidí.</p>
+  </section>
+
+  <!-- §7 -->
+  <section id="rejstrik">
+    <div class="sec-head">
+      <h2><span class="num">§7</span>Katalog protokolů podle účelu</h2>
+      <p>Filtr podle skupiny, hledání prochází i čísla portů a RFC. Kliknutí na záhlaví sloupce řadí.</p>
+    </div>
+    <div class="tfilter" id="grpFilter"></div>
+    <div class="tfilter" style="margin-top:-6px">
+      <input type="search" id="q" placeholder="filtr: 443, rfc 9293, tunel, multicast…" aria-label="Filtr katalogu">
+      <button class="tab" id="onlyKey" aria-pressed="false">jen základ</button>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="tiers">
+      <span><i style="background:var(--f-ctrl)"></i>základ — bez něj se nedá vysvětlit nic dalšího</span>
+      <span><i style="background:var(--rule-2)"></i>běžné v provozu</span>
+      <span><i style="background:var(--rule)"></i>specializované nebo historické</span>
+    </div>
+    <div class="tscroll">
+      <table>
+        <thead><tr>
+          <th data-s="0">protokol</th><th data-s="1">vrstva</th><th data-s="2">běží nad</th>
+          <th data-s="3">port</th><th data-s="4">RFC / norma</th><th>k čemu slouží</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <p style="color:inherit">Čísla portů dle registru IANA. Délky hlaviček bez voleb. Vzorový paket je syntetický, odpovídá ale reálnému SYN z Linuxu s výchozím nastavením.</p>
+</footer>
+
+<script>
+(function(){
+"use strict";
+const $=(s,r)=>(r||document).querySelector(s), $$=(s,r)=>Array.from((r||document).querySelectorAll(s));
+
+/* ===================== §1 HLAVIČKY ===================== */
+const P={
+eth:{
+  label:"Ethernet II", meta:"14 B hlavička + 4 B FCS · IEEE 802.3",
+  rows:[
+    [{k:"dst",t:"Destination MAC",b:32,c:"addr"}],
+    [{k:"dst",t:"Destination MAC (pokr.)",b:16,c:"addr"},{k:"src",t:"Source MAC",b:16,c:"addr"}],
+    [{k:"src",t:"Source MAC (pokr.)",b:32,c:"addr"}],
+    [{k:"type",t:"EtherType",b:16,c:"id"},{k:"pay",t:"užitečná data 46–1500 B",b:16,c:"pad"}]
+  ],
+  bytes:["00","1b","44","11","3a","b7","3c","22","fb","08","9e","d1","08","00"],
+  map:{dst:[0,6],src:[6,6],type:[12,2]},
+  f:{
+    dst:{t:"Destination MAC",off:"bajt 0–5",len:"48 b",val:"00:1b:44:11:3a:b7",d:"Fyzická adresa příjemce v místním segmentu. Při odesílání mimo podsíť sem patří MAC výchozí brány, ne cílového serveru — ta se mění na každém skoku."},
+    src:{t:"Source MAC",off:"bajt 6–11",len:"48 b",val:"3c:22:fb:08:9e:d1",d:"Adresa odesílajícího rozhraní. Switch si ji ukládá do CAM tabulky a podle ní pak ví, kterým portem posílat odpovědi."},
+    type:{t:"EtherType",off:"bajt 12–13",len:"16 b",val:"0x0800 = IPv4",d:"Určuje protokol v užitečných datech: 0x0800 IPv4, 0x86DD IPv6, 0x0806 ARP, 0x8100 značka VLAN 802.1Q (ta vloží další 4 B a posune zbytek)."}
+  }
+},
+ipv4:{
+  label:"IPv4", meta:"20 B bez voleb · RFC 791",
+  rows:[
+    [{k:"ver",t:"Ver",b:4,c:"id"},{k:"ihl",t:"IHL",b:4,c:"len"},{k:"dscp",t:"DSCP",b:6,c:"ctrl"},{k:"ecn",t:"ECN",b:2,c:"ctrl"},{k:"tlen",t:"Total Length",b:16,c:"len"}],
+    [{k:"id",t:"Identification",b:16,c:"id"},{k:"flags",t:"Flags",b:3,c:"ctrl"},{k:"frag",t:"Fragment Offset",b:13,c:"len"}],
+    [{k:"ttl",t:"TTL",b:8,c:"ctrl"},{k:"proto",t:"Protocol",b:8,c:"id"},{k:"cks",t:"Header Checksum",b:16,c:"chk"}],
+    [{k:"sip",t:"Source Address",b:32,c:"addr"}],
+    [{k:"dip",t:"Destination Address",b:32,c:"addr"}]
+  ],
+  bytes:["45","00","00","3c","1c","46","40","00","40","06","b1","e6","c0","a8","01","0e","5d","b8","d8","22"],
+  map:{ver:[0,1],ihl:[0,1],dscp:[1,1],ecn:[1,1],tlen:[2,2],id:[4,2],flags:[6,1],frag:[6,2],ttl:[8,1],proto:[9,1],cks:[10,2],sip:[12,4],dip:[16,4]},
+  f:{
+    ver:{t:"Version",off:"bajt 0, horní nibble",len:"4 b",val:"4",d:"Verze protokolu. Hodnota 6 by znamenala úplně jinou hlavičku — IPv6 má pevných 40 B a žádný kontrolní součet."},
+    ihl:{t:"IHL — Internet Header Length",off:"bajt 0, dolní nibble",len:"4 b",val:"5 → 20 B",d:"Délka hlavičky v 32bitových slovech. Minimum 5, maximum 15, takže volby IP smí zabrat nejvýš 40 B. Tady 5 znamená, že žádné volby nejsou."},
+    dscp:{t:"DSCP",off:"bajt 1, bity 0–5",len:"6 b",val:"0 (best effort)",d:"Značka pro třídění provozu. EF (0x2E) se dává hlasu, AF třídám datového provozu. Platí jen tam, kde si ji síť respektuje — přes internet se běžně nuluje."},
+    ecn:{t:"ECN",off:"bajt 1, bity 6–7",len:"2 b",val:"0",d:"Explicitní oznámení zahlcení. Router místo zahození paketu nastaví CE (11) a příjemce to vrátí příznakem ECE v TCP, takže se okno zmenší bez jediné ztráty."},
+    tlen:{t:"Total Length",off:"bajt 2–3",len:"16 b",val:"0x003c = 60 B",d:"Celá délka paketu včetně hlavičky IP. Zde 60 B = 20 B IP + 40 B TCP (20 B hlavička + 20 B voleb v SYN). Teoretické maximum 65 535 B."},
+    id:{t:"Identification",off:"bajt 4–5",len:"16 b",val:"0x1c46",d:"Společná značka všech fragmentů jednoho paketu. Příjemce podle ní skládá původní datagram zpátky dohromady."},
+    flags:{t:"Flags",off:"bajt 6, bity 0–2",len:"3 b",val:"010 = DF",d:"Bit 0 rezerva, DF zakazuje fragmentaci, MF značí, že následují další fragmenty. DF je nastaven kvůli hledání MTU cesty: router paket radši zahodí a pošle ICMP hlášku."},
+    frag:{t:"Fragment Offset",off:"bajt 6–7",len:"13 b",val:"0",d:"Pozice fragmentu v původním datagramu v násobcích 8 B. Proto musí být každý fragment kromě posledního dělitelný osmi."},
+    ttl:{t:"Time To Live",off:"bajt 8",len:"8 b",val:"64",d:"Každý router hodnotu sníží o jedna a při nule paket zahodí. Nejde o čas, ale o počet skoků — a je to pojistka proti nekonečné smyčce. Z výchozích hodnot (64 Linux, 128 Windows) se dá odhadnout systém odesílatele."},
+    proto:{t:"Protocol",off:"bajt 9",len:"8 b",val:"6 = TCP",d:"Co nese užitečná data: 1 ICMP, 6 TCP, 17 UDP, 47 GRE, 50 ESP. Podle toho se vybere dekodér pro zbytek paketu."},
+    cks:{t:"Header Checksum",off:"bajt 10–11",len:"16 b",val:"0xb1e6",d:"Jedničkový doplněk součtu hlavičky — jen hlavičky, ne dat. Každý router ho musí po snížení TTL přepočítat. IPv6 ho zrušilo, protože integritu stejně hlídá vrstva nad tím."},
+    sip:{t:"Source Address",off:"bajt 12–15",len:"32 b",val:"192.168.1.14",d:"Adresa odesílatele. Při průchodu NATem ji brána přepíše na svou veřejnou a změnu si uloží do překladové tabulky."},
+    dip:{t:"Destination Address",off:"bajt 16–19",len:"32 b",val:"93.184.216.34",d:"Adresa cíle. Podle ní hledá router nejdelší shodující se prefix ve směrovací tabulce."}
+  }
+},
+tcp:{
+  label:"TCP", meta:"20 B bez voleb · RFC 9293",
+  rows:[
+    [{k:"sport",t:"Source Port",b:16,c:"addr"},{k:"dport",t:"Destination Port",b:16,c:"addr"}],
+    [{k:"seq",t:"Sequence Number",b:32,c:"id"}],
+    [{k:"ack",t:"Acknowledgment Number",b:32,c:"id"}],
+    [{k:"doff",t:"Data Offset",b:4,c:"len"},{k:"rsv",t:"Rsvd",b:4,c:"pad"},{k:"flg",t:"Flags",b:8,c:"ctrl"},{k:"win",t:"Window",b:16,c:"ctrl"}],
+    [{k:"cks",t:"Checksum",b:16,c:"chk"},{k:"urg",t:"Urgent Pointer",b:16,c:"ctrl"}],
+    [{k:"opt",t:"Options — proměnná délka, zarovnáno na 32 b",b:32,c:"len"}]
+  ],
+  bytes:["c8","32","01","bb","00","00","00","00","00","00","00","00","a0","02","fa","f0","fe","30","00","00"],
+  map:{sport:[0,2],dport:[2,2],seq:[4,4],ack:[8,4],doff:[12,1],rsv:[12,1],flg:[13,1],win:[14,2],cks:[16,2],urg:[18,2],opt:[20,0]},
+  f:{
+    sport:{t:"Source Port",off:"bajt 0–1",len:"16 b",val:"0xc832 = 51250",d:"Efemérní port, který si jádro vybralo z rozsahu 32768–60999. Spolu s cílovým portem a oběma IP tvoří čtveřici, která spojení jednoznačně identifikuje."},
+    dport:{t:"Destination Port",off:"bajt 2–3",len:"16 b",val:"0x01bb = 443",d:"Port služby na druhé straně. 443 je HTTPS, tedy TLS nad TCP."},
+    seq:{t:"Sequence Number",off:"bajt 4–7",len:"32 b",val:"0 (relativní)",d:"Číslo prvního bajtu v segmentu. Počáteční hodnota je náhodná (ISN) kvůli ztížení podvržení spojení; analyzátory ji přepočítávají na relativní nulu. V SYN segmentu spotřebuje číslo samotný příznak SYN, proto se potvrzuje hodnotou ISN+1."},
+    ack:{t:"Acknowledgment Number",off:"bajt 8–11",len:"32 b",val:"0 — nevyužito",d:"Číslo následujícího očekávaného bajtu, tedy kumulativní potvrzení všeho před ním. Platné jen při nastaveném příznaku ACK; v prvním SYN proto nese nulu."},
+    doff:{t:"Data Offset",off:"bajt 12, horní nibble",len:"4 b",val:"0xa = 10 → 40 B",d:"Délka hlavičky TCP v 32bitových slovech. Hodnota 10 znamená 20 B pevné části a 20 B voleb — typicky MSS, SACK permitted, Timestamps a Window scale."},
+    rsv:{t:"Rezervované bity",off:"bajt 12, dolní nibble",len:"4 b",val:"0",d:"Dříve 4 nevyužité bity; dnes z nich tři slouží ECN (NS, CWR, ECE jsou vedeny jako příznaky). Musí se vysílat nulové."},
+    flg:{t:"Flags",off:"bajt 13",len:"8 b",val:"0x02 = SYN",d:"Osm řídicích bitů, kterým je věnovaný §2. Zde jediný nastavený SYN odpovídá prvnímu segmentu navazování."},
+    win:{t:"Window",off:"bajt 14–15",len:"16 b",val:"0xfaf0 = 64240 B",d:"Kolik bajtů je odesílatel ochoten přijmout bez potvrzení — řízení toku, tedy ochrana příjemce. Strop 65 535 B se posouvá volbou Window scale až na 1 GB. Nemá nic společného s cwnd, které řídí zahlcení sítě."},
+    cks:{t:"Checksum",off:"bajt 16–17",len:"16 b",val:"0xfe30",d:"Počítá se z hlavičky, dat i pseudohlavičky s IP adresami — proto NAT musí po přepsání adresy součet přepočítat. Na moderních kartách to dělá hardware."},
+    urg:{t:"Urgent Pointer",off:"bajt 18–19",len:"16 b",val:"0",d:"Offset konce naléhavých dat, platný jen s příznakem URG. V praxi se nepoužívá a RFC 6093 ho pro nové aplikace nedoporučuje."},
+    opt:{t:"Options",off:"bajt 20+",len:"0–40 B",val:"MSS, SACK, TS, WS",d:"Volby typu kind–length–value. MSS se vyjednává jen v SYN, Window scale a SACK permitted taktéž; Timestamps běží po celou dobu spojení a slouží k měření RTT a ochraně před přetočením sekvenčních čísel."}
+  }
+},
+udp:{
+  label:"UDP", meta:"8 B pevně · RFC 768",
+  rows:[
+    [{k:"sport",t:"Source Port",b:16,c:"addr"},{k:"dport",t:"Destination Port",b:16,c:"addr"}],
+    [{k:"len",t:"Length",b:16,c:"len"},{k:"cks",t:"Checksum",b:16,c:"chk"}]
+  ],
+  bytes:["c8","32","00","35","00","2a","1f","9c"],
+  map:{sport:[0,2],dport:[2,2],len:[4,2],cks:[6,2]},
+  f:{
+    sport:{t:"Source Port",off:"bajt 0–1",len:"16 b",val:"51250",d:"Nepovinný — smí být nula, pokud odesílatel odpověď neočekává. Jinak určuje, kam se vrátí odpověď."},
+    dport:{t:"Destination Port",off:"bajt 2–3",len:"16 b",val:"53 = DNS",d:"Port cílové služby. Zde dotaz na jmenný server."},
+    len:{t:"Length",off:"bajt 4–5",len:"16 b",val:"42 B",d:"Délka hlavičky i dat dohromady, minimum je tedy 8. Narozdíl od TCP tu není žádné pořadové číslo — datagram je celistvá jednotka, nebo nic."},
+    cks:{t:"Checksum",off:"bajt 6–7",len:"16 b",val:"0x1f9c",d:"Nad IPv4 nepovinný (nula znamená nepočítáno), nad IPv6 povinný. Celých 8 B režie proti 20 B u TCP je hlavní důvod, proč na UDP stojí DNS i QUIC."}
+  }
+}};
+
+let curP="ipv4", curF=null;
+const tabsEl=$("#protoTabs"), rowsEl=$("#bitRows"), hexEl=$("#hexdump"), detEl=$("#fieldDetail"), metaEl=$("#protoMeta");
+
+tabsEl.innerHTML=Object.keys(P).map(k=>`<button class="tab" data-p="${k}" aria-pressed="${k===curP}">${P[k].label}</button>`).join("");
+$$(".tab",tabsEl).forEach(b=>b.addEventListener("click",()=>{curP=b.dataset.p;curF=null;$$(".tab",tabsEl).forEach(x=>x.setAttribute("aria-pressed",String(x===b)));draw();}));
+
+function draw(){
+  const p=P[curP];
+  metaEl.textContent=p.meta;
+  rowsEl.innerHTML=p.rows.map(r=>`<div class="brow">`+r.map(f=>
+    `<button class="bf" style="grid-column:span ${f.b}" data-c="${f.c}" data-k="${f.k}" aria-pressed="${f.k===curF}" ${f.c==="pad"&&!p.f[f.k]?"disabled":""} title="${f.t}">
+      <span class="bf__t">${f.t}</span><span class="bf__b">${f.b} b</span></button>`).join("")+`</div>`).join("");
+  $$(".bf",rowsEl).forEach(b=>b.addEventListener("click",()=>{curF=b.dataset.k;draw();}));
+
+  const m=p.map[curF];
+  hexEl.innerHTML=p.bytes.map((b,i)=>{
+    const on=m && i>=m[0] && i<m[0]+m[1];
+    return `<button class="hb ${on?"on":""}" data-i="${i}">${b}</button>`;
+  }).join("")+`<span class="hex__off">${p.bytes.length} B · offset 0x00–0x${(p.bytes.length-1).toString(16).padStart(2,"0")}</span>`;
+  $$(".hb",hexEl).forEach(b=>b.addEventListener("click",()=>{
+    const i=+b.dataset.i;
+    const hit=Object.keys(p.map).find(k=>{const r=p.map[k];return r[1]>0 && i>=r[0] && i<r[0]+r[1] && p.f[k];});
+    if(hit){curF=hit;draw();}
+  }));
+
+  const f=p.f[curF];
+  detEl.innerHTML = f
+    ? `<h3>${f.t}</h3><dl><dt>offset</dt><dd>${f.off}</dd><dt>délka</dt><dd>${f.len}</dd><dt>ve vzorku</dt><dd>${f.val}</dd></dl><p>${f.d}</p>`
+    : `<h3>Vyberte pole</h3><p style="margin-top:6px">Barva kóduje roli pole. Hexdump vpravo ukazuje skutečné bajty vzorku — kliknutí na bajt vybere pole, do kterého patří.</p>`;
+}
+draw();
+
+/* ===================== §2 PŘÍZNAKY ===================== */
+const FLAGS=[
+ {n:"CWR",m:"0x80",d:"Odesílatel zmenšil okno kvůli oznámení zahlcení (ECN)."},
+ {n:"ECE",m:"0x40",d:"Protistrana hlásí zahlcení na cestě, viz pole ECN v IP."},
+ {n:"URG",m:"0x20",d:"Platí Urgent Pointer. Historický mechanismus, nepoužívá se."},
+ {n:"ACK",m:"0x10",d:"Pole Acknowledgment Number nese platnou hodnotu. Je nastaven ve všech segmentech kromě prvního SYN."},
+ {n:"PSH",m:"0x08",d:"Nedrž data ve vyrovnávací paměti, předej je aplikaci hned."},
+ {n:"RST",m:"0x04",d:"Okamžité zrušení spojení. Přijde typicky na port, kde nikdo nenaslouchá."},
+ {n:"SYN",m:"0x02",d:"Žádost o navázání a synchronizace sekvenčních čísel. Spotřebuje jedno pořadové číslo."},
+ {n:"FIN",m:"0x01",d:"Odesílatel už nemá co poslat. Uzavírá jen svůj směr — druhý zůstává otevřený."}
+];
+const NAMED={0x02:"SYN — žádost o navázání spojení",0x12:"SYN, ACK — server přijímá a sám se synchronizuje",0x10:"ACK — holé potvrzení",0x18:"PSH, ACK — datový segment s potvrzením",0x11:"FIN, ACK — uzavření vlastního směru",0x04:"RST — tvrdé zrušení spojení",0x14:"RST, ACK — odmítnutí spojení",0x00:"bez příznaků — null scan, legitimní provoz to není",0x29:"FIN, PSH, URG — Xmas scan"};
+let fv=0x02;
+const flagsEl=$("#flags");
+function renderFlags(){
+  flagsEl.innerHTML=FLAGS.map((f,i)=>{
+    const bit=0x80>>i;
+    return `<button class="flag" data-b="${bit}" aria-pressed="${!!(fv&bit)}"><span class="flag__n">${f.n}</span><span class="flag__m">${f.m}</span></button>`;
+  }).join("");
+  $$(".flag",flagsEl).forEach(b=>b.addEventListener("click",()=>{fv^=+b.dataset.b;renderFlags();}));
+  const bin=fv.toString(2).padStart(8,"0");
+  $("#fBin").textContent=bin.slice(0,4)+" "+bin.slice(4);
+  $("#fHex").textContent="0x"+fv.toString(16).padStart(2,"0");
+  $("#fDec").textContent=fv;
+  const set=FLAGS.filter((f,i)=>fv&(0x80>>i));
+  $("#fName").textContent=NAMED[fv]||(set.length?set.map(f=>f.n).join(", "):"žádný bit nastaven");
+  $("#fNote").innerHTML=set.length?set.map(f=>`<b class="mono">${f.n}</b> — ${f.d}`).join("<br>"):"Segment bez jediného příznaku žádný stavový automat nepřipouští; používá se jen při skenování portů.";
+}
+renderFlags();
+
+/* ===================== §3 STAVOVÝ AUTOMAT ===================== */
+const STATES=[
+ ["CLOSED","žádné spojení"],["LISTEN","server čeká"],["SYN_SENT","odeslán SYN"],["SYN_RCVD","přijat SYN"],
+ ["ESTABLISHED","přenos dat"],["FIN_WAIT_1","odeslán FIN"],["FIN_WAIT_2","FIN potvrzen"],["CLOSING","FIN křížem"],
+ ["TIME_WAIT","čeká 2×MSL"],["CLOSE_WAIT","protistrana skončila"],["LAST_ACK","čeká na poslední ACK"]
+];
+const TR={
+ CLOSED:[{e:"aplikace: listen()",to:"LISTEN",n:"Pasivní otevření. Jádro si založí frontu příchozích spojení, po drátě zatím nejde nic."},
+         {e:"aplikace: connect() → SYN",to:"SYN_SENT",n:"Aktivní otevření. Odchází SYN s počátečním sekvenčním číslem a volbami."}],
+ LISTEN:[{e:"přijat SYN → SYN, ACK",to:"SYN_RCVD",n:"Server zakládá polootevřené spojení. Při záplavě SYN se fronta zaplní, proto existují SYN cookies."},
+         {e:"aplikace: close()",to:"CLOSED",n:"Naslouchající soket se ruší."}],
+ SYN_SENT:[{e:"přijat SYN, ACK → ACK",to:"ESTABLISHED",n:"Druhá strana potvrdila. Klient odesílá poslední ACK a smí k němu rovnou přibalit data."},
+           {e:"přijat SYN → SYN, ACK",to:"SYN_RCVD",n:"Souběžné otevření — obě strany se pokusily připojit zároveň. Vzácné, ale definované."},
+           {e:"vypršel časovač / RST",to:"CLOSED",n:"Odpověď nepřišla. Linux opakuje SYN několikrát se zdvojnásobením intervalu, pak hlásí timeout."}],
+ SYN_RCVD:[{e:"přijat ACK",to:"ESTABLISHED",n:"Trojcestný handshake dokončen, spojení je obousměrně otevřené."},
+           {e:"aplikace: close() → FIN",to:"FIN_WAIT_1",n:"Aplikace spojení zavírá dřív, než stihla cokoli poslat."}],
+ ESTABLISHED:[{e:"aplikace: close() → FIN",to:"FIN_WAIT_1",n:"Aktivní uzavření. Tahle strana skončí v TIME_WAIT a ponese jeho náklady."},
+              {e:"přijat FIN → ACK",to:"CLOSE_WAIT",n:"Protistrana skončila s odesíláním. Tahle strana ale smí posílat dál — spojení je poloviční."}],
+ FIN_WAIT_1:[{e:"přijat ACK",to:"FIN_WAIT_2",n:"Vlastní FIN je potvrzen, čeká se na FIN od protistrany."},
+             {e:"přijat FIN → ACK",to:"CLOSING",n:"Obě strany poslaly FIN zároveň."}],
+ FIN_WAIT_2:[{e:"přijat FIN → ACK",to:"TIME_WAIT",n:"Protistrana dokončila. Bez jejího FIN by se tu dalo uvíznout, proto má jádro vlastní časovač."}],
+ CLOSING:[{e:"přijat ACK",to:"TIME_WAIT",n:"Poslední potvrzení dorazilo."}],
+ TIME_WAIT:[{e:"vypršel časovač 2×MSL",to:"CLOSED",n:"Čekání zajišťuje, že se zatoulané segmenty staré čtveřice nepletou do nového spojení, a že poslední ACK dorazí."}],
+ CLOSE_WAIT:[{e:"aplikace: close() → FIN",to:"LAST_ACK",n:"Hromada soketů uvízlých v CLOSE_WAIT znamená, že aplikace zapomíná volat close()."}],
+ LAST_ACK:[{e:"přijat ACK",to:"CLOSED",n:"Pasivní uzavření hotovo — tahle strana žádný TIME_WAIT nedrží."}]
+};
+let cur="CLOSED", seen=new Set(["CLOSED"]), logs=[];
+const stEl=$("#states"), evEl=$("#events"), logEl=$("#smLog"), noteEl=$("#smNote");
+function renderSM(){
+  stEl.innerHTML=STATES.map(([s,d])=>`<div class="st ${s===cur?"cur":(seen.has(s)?"seen":"")}"><b>${s}</b>${d}</div>`).join("");
+  const list=TR[cur]||[];
+  evEl.innerHTML=list.map((t,i)=>`<button data-i="${i}">${t.e} → <b>${t.to}</b><small>${t.n}</small></button>`).join("");
+  $$("button",evEl).forEach(b=>b.addEventListener("click",()=>{
+    const t=list[+b.dataset.i];
+    logs.push(`${cur} → ${t.to} <b>[${t.e}]</b>`);
+    cur=t.to; seen.add(cur); noteEl.textContent=t.n; renderSM();
+  }));
+  logEl.innerHTML=logs.length?logs.map((l,i)=>`<div>${String(i+1).padStart(2,"0")} ${l}</div>`).join(""):"<div>přechody se vypíší sem</div>";
+  logEl.scrollTop=logEl.scrollHeight;
+}
+$("#smReset").addEventListener("click",()=>{cur="CLOSED";seen=new Set(["CLOSED"]);logs=[];noteEl.textContent="";renderSM();});
+$("#roleA").addEventListener("click",()=>{$("#roleA").setAttribute("aria-pressed","true");$("#roleP").setAttribute("aria-pressed","false");cur="CLOSED";seen=new Set(["CLOSED"]);logs=[];noteEl.textContent="Klient začíná v CLOSED a volá connect(). Po uzavření projde TIME_WAIT.";renderSM();});
+$("#roleP").addEventListener("click",()=>{$("#roleP").setAttribute("aria-pressed","true");$("#roleA").setAttribute("aria-pressed","false");cur="LISTEN";seen=new Set(["CLOSED","LISTEN"]);logs=["CLOSED → LISTEN <b>[listen()]</b>"];noteEl.textContent="Server už naslouchá. Typická cesta vede přes SYN_RCVD, ESTABLISHED, CLOSE_WAIT a LAST_ACK.";renderSM();});
+renderSM();
+
+/* ===================== §4 MTU / MSS ===================== */
+const els={mtu:$("#mtuSel"),ip:$("#ipSel"),ts:$("#optTs"),sack:$("#optSack"),ws:$("#optWs"),pay:$("#payload")};
+function calc(){
+  const mtu=+els.mtu.value, iph=+els.ip.value;
+  let opt=0; if(els.ts.checked)opt+=12; if(els.sack.checked)opt+=4; if(els.ws.checked)opt+=4;
+  opt=Math.ceil(opt/4)*4;
+  const tcph=20+opt, mss=mtu-iph-tcph;
+  const payKB=Math.max(1,+els.pay.value||1), total=payKB*1024;
+  const segs=Math.ceil(total/mss);
+  const over=segs*(14+iph+tcph);
+  const eff=(100*total/(total+over)).toFixed(1);
+  const w=x=>(100*x/(mtu+14)).toFixed(2)+"%";
+  $("#bar").innerHTML=
+    `<div class="b-eth" style="width:${w(14)}">14</div>`+
+    `<div class="b-ip" style="width:${w(iph)}">IP ${iph}</div>`+
+    `<div class="b-tcp" style="width:${w(20)}">TCP 20</div>`+
+    (opt?`<div class="b-opt" style="width:${w(opt)}">${opt}</div>`:"")+
+    `<div class="b-pay" style="width:${w(mss)}">užitečná data ${mss} B</div>`;
+  $("#readout").innerHTML=
+    `<div class="ro"><b>${mss}</b><span>MSS (B)</span></div>`+
+    `<div class="ro"><b>${segs.toLocaleString("cs")}</b><span>segmentů</span></div>`+
+    `<div class="ro"><b>${(over/1024).toFixed(1)}</b><span>režie (kB)</span></div>`+
+    `<div class="ro"><b>${eff} %</b><span>podíl dat na drátě</span></div>`;
+  $("#mtuNote").textContent = mss<536
+    ? "MSS pod 536 B je pod minimem, které musí umět každá implementace IPv4. Taková cesta je prakticky nepoužitelná."
+    : (mtu<1500
+      ? "Snížené MTU se musí projevit i v MSS, jinak odesílatel plní rámce nad limit. Pokud je přitom nastaven DF a ICMP hlášky filtruje firewall, vzniká černá díra PMTUD: handshake projde, velké přenosy se zaseknou."
+      : "Hlavičky se platí z každého segmentu. Jumbo rámce proto v datovém centru výrazně zlepšují poměr dat k režii, přes internet ale projít nemají šanci.");
+}
+Object.values(els).forEach(e=>e.addEventListener("input",calc));
+calc();
+
+/* ===================== §5 RTT ===================== */
+const RTT=[
+ {t:"TCP + TLS 1.2",n:"3 RTT",s:["SYN →","← SYN, ACK","ACK → (1 RTT)","ClientHello →","← ServerHello, Certificate","ClientKeyExchange, Finished →","← Finished (3 RTT)","GET → první byte dat"]},
+ {t:"TCP + TLS 1.3",n:"2 RTT",s:["SYN →","← SYN, ACK","ACK → (1 RTT)","ClientHello + key_share →","← ServerHello, Finished","Finished + GET → (2 RTT)","← odpověď"]},
+ {t:"QUIC nad UDP",n:"1 RTT",s:["Initial: ClientHello →","← ServerHello, Finished","Finished + GET → (1 RTT)","← odpověď","0-RTT: při opakovaném spojení odchází GET rovnou s prvním paketem"]}
+];
+$("#rtts").innerHTML=RTT.map(r=>`<div class="rtt"><h3>${r.t}</h3><div class="rtt__n">${r.n}</div><ol>${r.s.map(x=>`<li>${x}</li>`).join("")}</ol></div>`).join("");
+
+/* ===================== §7 KATALOG ===================== */
+const GRP=[
+ ["web","Web a přenos obsahu","Požadavek a odpověď nad TCP nebo QUIC; nese většinu uživatelského provozu."],
+ ["dns","Jména, adresy a objevování","Překlad jmen na adresy a automatické získání konfigurace po připojení."],
+ ["mail","Elektronická pošta","Doručení mezi servery, čtení schránky a ověření odesílatele přes DNS."],
+ ["remote","Vzdálený přístup a soubory","Konzole, plocha a sdílená úložiště na druhém konci sítě."],
+ ["trans","Transportní vrstva","Rozdělení dat na kusy, adresace portem a případné záruky doručení."],
+ ["rout","Směrování a doručování","Jak paket najde cestu přes cizí sítě a co se hlásí, když ji nenajde."],
+ ["sec","Šifrování, tunely a autentizace","Důvěrnost a integrita provozu plus ověření, kdo na druhé straně je."],
+ ["mgmt","Správa, čas a telemetrie","Sběr stavu, logů a statistik provozu; synchronizace hodin."],
+ ["rt","Hlas, video a reálný čas","Signalizace hovoru a přenos proudu, kde zpoždění bolí víc než ztráta."],
+ ["l2","Místní síť a linková vrstva","Rámce, segmentace do VLAN, redundance a tunely mezi lokalitami."],
+ ["iot","Úložiště, průmysl a IoT","Bloková data po síti a protokoly pro zařízení s malou pamětí."]
+];
+const ROWS=[
+ ["HTTP/1.1","web","L7","TCP","80","RFC 9112","Bezstavový požadavek a odpověď v textové podobě; souběh se řeší více spojeními."],
+ ["HTTP/2","web","L7","TCP + TLS","443","RFC 9113","Multiplex proudů v jednom spojení a komprese hlaviček HPACK; ztráta paketu ale zablokuje všechny proudy."],
+ ["HTTP/3","web","L7","QUIC","443/UDP","RFC 9114","Proudy jsou nezávislé, odpadá blokování v čele fronty a spojení přežije změnu sítě."],
+ ["WebSocket","web","L7","TCP","80, 443","RFC 6455","Z HTTP spojení udělá obousměrný kanál, kterým může server posílat data bez vyžádání."],
+ ["gRPC","web","L7","HTTP/2","443","—","Volání vzdálených procedur se zprávami v Protobufu a proudy v obou směrech."],
+ ["HLS / DASH","web","L7","HTTP","443","RFC 8216","Video nakrájené na segmenty; klient si podle propustnosti sám volí kvalitu."],
+ ["WebDAV","web","L7","HTTP","443","RFC 4918","Rozšíření HTTP o zápis, zamykání a správu souborů na serveru."],
+
+ ["DNS","dns","L7","UDP / TCP","53","RFC 1035","Překlad jmen na adresy. Odpovědi nad 512 B se řeší přes EDNS0 nebo přechodem na TCP."],
+ ["DNS over TLS","dns","L7","TLS / TCP","853","RFC 7858","Šifrovaný DNS na vyhrazeném portu — provoz je skrytý, ale snadno rozpoznatelný."],
+ ["DNS over HTTPS","dns","L7","HTTPS","443","RFC 8484","DNS k nerozeznání od webového provozu; výhoda pro soukromí, potíž pro firemní filtrování."],
+ ["DNSSEC","dns","L7","DNS","53","RFC 4035","Podpis záznamů, který odhalí podvrženou odpověď. Nešifruje, jen ověřuje pravost."],
+ ["mDNS","dns","L7","UDP multicast","5353","RFC 6762","Jména .local bez serveru; na něm stojí objevování tiskáren a zařízení v domácnosti."],
+ ["DHCP","dns","L7","UDP","67, 68","RFC 2131","Čtyřkroková výměna DISCOVER, OFFER, REQUEST, ACK přidělí adresu, bránu, masku a DNS."],
+ ["DHCPv6","dns","L7","UDP","546, 547","RFC 8415","Obdoba pro IPv6; část konfigurace tu ale zvládne i bezstavová autokonfigurace přes NDP."],
+ ["ARP","dns","L2","Ethernet","—","RFC 826","Dotaz na MAC adresu k dané IP v místní síti. Bez jakéhokoli ověření, odtud ARP spoofing."],
+ ["NDP","dns","L3","ICMPv6","—","RFC 4861","Náhrada ARP v IPv6; navíc oznamuje prefix sítě a umožní stanici vyrobit si adresu samé."],
+ ["WHOIS / RDAP","dns","L7","TCP / HTTPS","43, 443","RFC 3912","Dotaz na držitele domény nebo rozsahu adres. RDAP vrací strukturovaný JSON."],
+
+ ["SMTP","mail","L7","TCP","25","RFC 5321","Doručení zprávy mezi poštovními servery. Pro čtení schránky se nepoužívá."],
+ ["Submission","mail","L7","TCP + TLS","587","RFC 6409","Odesílání od klienta s povinnou autentizací; port 25 bývá u poskytovatelů blokován."],
+ ["IMAP","mail","L7","TCP","143, 993","RFC 9051","Pošta zůstává na serveru, klient synchronizuje složky a stavy zpráv napříč zařízeními."],
+ ["POP3","mail","L7","TCP","110, 995","RFC 1939","Stáhne zprávy do zařízení a ze serveru je typicky smaže. Dnes okrajové."],
+ ["SPF","mail","L7","DNS","53","RFC 7208","Záznam v DNS se seznamem serverů, které smí za doménu odesílat."],
+ ["DKIM","mail","L7","DNS","53","RFC 6376","Podpis hlaviček a těla zprávy; příjemce ověří klíčem z DNS, že se nic nezměnilo."],
+ ["DMARC","mail","L7","DNS","53","RFC 7489","Určuje, co dělat se zprávou, která neprojde SPF ani DKIM, a kam posílat reporty."],
+
+ ["SSH","remote","L7","TCP","22","RFC 4253","Šifrovaná konzole, přenos souborů i tunelování portů v jednom multiplexovaném spojení."],
+ ["SFTP","remote","L7","SSH","22","—","Přenos souborů uvnitř SSH kanálu. S protokolem FTP nemá nic společného."],
+ ["FTP","remote","L7","TCP","20, 21","RFC 959","Oddělené řídicí a datové spojení. Bez šifrování a kvůli aktivnímu režimu nepřítel firewallů."],
+ ["TFTP","remote","L7","UDP","69","RFC 1350","Minimalistický přenos bez autentizace; používá se k bootování zařízení ze sítě."],
+ ["Telnet","remote","L7","TCP","23","RFC 854","Vzdálená konzole v otevřeném textu včetně hesla. Dnes jen k testování portů."],
+ ["RDP","remote","L7","TCP / UDP","3389","MS-RDPBCGR","Vzdálená plocha Windows; přenáší kreslicí příkazy, ne obrazovku jako video."],
+ ["VNC / RFB","remote","L7","TCP","5900","RFC 6143","Přenos rastru obrazovky nezávislý na systému. Šifrování až v nadstavbách."],
+ ["SMB","remote","L7","TCP","445","MS-SMB2","Sdílené disky a tiskárny ve Windows. Port 445 nemá co dělat na hranici sítě."],
+ ["NFS","remote","L7","TCP","2049","RFC 8881","Síťový souborový systém v unixovém světě; oprávnění řeší přes UID a GID."],
+ ["rsync","remote","L7","TCP / SSH","873","—","Přenese jen rozdíly souborů; hodí se na zálohy velkých adresářů."],
+
+ ["TCP","trans","L4","IP","—","RFC 9293","Spolehlivý proud bajtů, řízení toku oknem a řízení zahlcení algoritmem CUBIC nebo BBR."],
+ ["UDP","trans","L4","IP","—","RFC 768","Bez spojení a bez záruk, jen 8 B hlavičky. Stojí na něm DNS, hry i QUIC."],
+ ["QUIC","trans","L4","UDP","443","RFC 9000","Šifrovaný už na úrovni transportu, nezávislé proudy a migrace spojení přes connection ID."],
+ ["SCTP","trans","L4","IP","—","RFC 9260","Víc proudů a víc adres v jednom spojení; páteř signalizace mobilních sítí."],
+ ["DCCP","trans","L4","IP","—","RFC 4340","Řízení zahlcení bez záruky doručení. V praxi se prosadilo minimálně."],
+
+ ["IPv4","rout","L3","Ethernet","—","RFC 791","Adresace 32 bity, fragmentace, TTL a kontrolní součet hlavičky."],
+ ["IPv6","rout","L3","Ethernet","—","RFC 8200","Pevná hlavička 40 B, rozšíření v řetězci hlaviček, fragmentuje jen odesílatel."],
+ ["ICMP","rout","L3","IP","—","RFC 792","Hlášení o chybách a diagnostika. Nese ho ping, traceroute i hledání MTU cesty."],
+ ["IGMP","rout","L3","IP","—","RFC 3376","Přihlašování stanice ke skupinám multicastu v místní síti."],
+ ["OSPF","rout","L3","IP (proto 89)","—","RFC 2328","Vnitřní směrování podle stavu linek; každý router počítá strom nejkratších cest."],
+ ["IS-IS","rout","L3","přímo L2","—","ISO 10589","Alternativa k OSPF, oblíbená u operátorů kvůli nezávislosti na IP."],
+ ["BGP","rout","L3","TCP","179","RFC 4271","Směrování mezi autonomními systémy. Rozhoduje politika a délka cesty, ne rychlost linky."],
+ ["RIPv2","rout","L3","UDP","520","RFC 2453","Směrování podle počtu skoků s limitem 15. Historické, pomalu konverguje."],
+ ["VRRP","rout","L3","IP (proto 112)","—","RFC 5798","Dva routery sdílejí jednu virtuální adresu brány, aby výpadek jednoho nikdo nepoznal."],
+ ["BFD","rout","L3","UDP","3784","RFC 5880","Detekce výpadku souseda v řádu milisekund, rychleji než časovače směrovacích protokolů."],
+ ["MPLS","rout","L2/L3","Ethernet","—","RFC 3031","Přepínání podle návěští místo hledání v tabulce; nosí i VPN zákazníků."],
+
+ ["TLS 1.3","sec","L5–7","TCP","—","RFC 8446","Jediné RTT na handshake, dopředná bezpečnost a konec statických výměn klíčů."],
+ ["DTLS","sec","L5–7","UDP","—","RFC 9147","TLS přizpůsobené datagramům; chrání SRTP i CoAP."],
+ ["IPsec ESP","sec","L3","IP (proto 50)","—","RFC 4303","Šifruje a autentizuje celý paket; v tunelovém režimu skryje i původní adresy."],
+ ["IKEv2","sec","L5–7","UDP","500, 4500","RFC 7296","Dohodne klíče a parametry pro IPsec. Port 4500 slouží k průchodu NATem."],
+ ["WireGuard","sec","L3","UDP","51820","—","Několik tisíc řádků kódu, pevná sada šifer, žádné vyjednávání. Rychlé i na slabém hardwaru."],
+ ["OpenVPN","sec","L3/L2","UDP / TCP","1194","—","Tunel nad TLS; přes TCP sice projde skoro všude, ale platí se za to zpomalením."],
+ ["802.1X / EAP","sec","L2","Ethernet","—","RFC 3748","Autentizace zařízení dřív, než ho switch pustí do sítě."],
+ ["RADIUS","sec","L7","UDP","1812, 1813","RFC 2865","Centrální ověření uživatelů a účtování; stojí na něm firemní Wi-Fi i VPN."],
+ ["Kerberos","sec","L7","UDP / TCP","88","RFC 4120","Lístky s omezenou platností místo posílání hesel. Základ přihlašování v doméně."],
+ ["LDAP","sec","L7","TCP","389, 636","RFC 4511","Adresářová služba s uživateli, skupinami a oprávněními."],
+ ["ACME","sec","L7","HTTPS","443","RFC 8555","Automatické vydávání certifikátů po ověření domény. Pohání Let’s Encrypt."],
+
+ ["NTP","mgmt","L7","UDP","123","RFC 5905","Z časů odeslání a příjmu spočítá odchylku hodin i zpoždění cesty."],
+ ["PTP","mgmt","L2/L7","Ethernet / UDP","319, 320","IEEE 1588","Přesnost v nanosekundách díky časovým značkám přímo v hardwaru switche."],
+ ["SNMP","mgmt","L7","UDP","161, 162","RFC 3411","Čtení stavových proměnných zařízení a příjem pastí při poruše."],
+ ["Syslog","mgmt","L7","UDP / TCP","514","RFC 5424","Odesílání logů na centrální server; bez TLS putují v otevřeném textu."],
+ ["IPFIX / NetFlow","mgmt","L7","UDP","4739, 2055","RFC 7011","Statistika toků — kdo s kým a kolik. Neukládá obsah, jen metadata."],
+ ["LLDP","mgmt","L2","Ethernet","—","IEEE 802.1AB","Zařízení si vzájemně oznamují jméno, port a schopnosti. Odtud se kreslí mapa sítě."],
+
+ ["SIP","rt","L5–7","UDP / TCP","5060, 5061","RFC 3261","Signalizace hovoru: sestavení, přesměrování, ukončení. Samotný zvuk nenese."],
+ ["SDP","rt","L5–7","SIP","—","RFC 8866","Popis nabízených kodeků a portů, podle kterého se obě strany domluví."],
+ ["RTP","rt","L5–7","UDP","dynamické sudé","RFC 3550","Nese zvuk a video s pořadovým číslem a časovou značkou pro plynulé přehrání."],
+ ["RTCP","rt","L5–7","UDP","dynamické liché","RFC 3550","Zpětná vazba o ztrátovosti a rozptylu zpoždění; podle ní se mění kvalita."],
+ ["SRTP","rt","L5–7","UDP","—","RFC 3711","Šifrovaná varianta RTP s klíči vyjednanými přes DTLS."],
+ ["STUN / TURN","rt","L5–7","UDP / TCP","3478, 5349","RFC 8489","Zjistí veřejnou adresu za NATem; když přímé spojení nejde, TURN provoz přenese."],
+ ["RTSP","rt","L5–7","TCP","554","RFC 2326","Řízení přehrávání u kamer a streamovacích serverů — play, pause, seek."],
+
+ ["Ethernet II","l2","L2","—","—","IEEE 802.3","Rámec s MAC adresami, polem EtherType a kontrolním součtem FCS."],
+ ["802.1Q","l2","L2","Ethernet","—","IEEE 802.1Q","Značka VLAN o 4 B rozdělí jednu fyzickou síť na oddělené logické."],
+ ["802.11","l2","L2","—","—","IEEE 802.11","Wi-Fi: delší hlavička, potvrzování rámců a šifrování WPA2 nebo WPA3."],
+ ["STP / RSTP","l2","L2","Ethernet","—","IEEE 802.1D/w","Zablokuje redundantní linky, aby v topologii nevznikla smyčka s lavinou rámců."],
+ ["LACP","l2","L2","Ethernet","—","IEEE 802.3ad","Sdruží několik linek do jedné logické kvůli propustnosti a záloze."],
+ ["PPPoE","l2","L2","Ethernet","—","RFC 2516","Relace a autentizace u poskytovatele; ubere 8 B, odtud MTU 1492."],
+ ["VXLAN","l2","L2 v L3","UDP","4789","RFC 7348","Tuneluje rámce přes směrovanou síť; 16 milionů segmentů místo 4094 VLAN."],
+ ["GRE","l2","L3","IP (proto 47)","—","RFC 2784","Jednoduchý tunel bez šifrování, často v kombinaci s IPsec."],
+
+ ["iSCSI","iot","L7","TCP","3260","RFC 7143","Bloková zařízení po síti; server je vidí jako lokální disk."],
+ ["NVMe/TCP","iot","L7","TCP","4420","NVMe-oF","Přístup k NVMe úložišti přes běžnou síť s latencí v desítkách mikrosekund."],
+ ["MQTT","iot","L7","TCP","1883, 8883","OASIS","Publikování a odběr témat přes prostředníka; hlavička od 2 B, ideální pro baterií napájená čidla."],
+ ["CoAP","iot","L7","UDP","5683","RFC 7252","REST pro zařízení s kilobajty paměti; volitelné potvrzování, zabezpečení přes DTLS."],
+ ["AMQP","iot","L7","TCP","5672","OASIS","Fronty zpráv se zárukou doručení a transakcemi mezi systémy."],
+ ["Modbus TCP","iot","L7","TCP","502","Modbus","Čtení a zápis registrů v průmyslových automatech. Bez autentizace, patří do oddělené sítě."],
+ ["OPC UA","iot","L7","TCP","4840","IEC 62541","Modelovaná data strojů s podpisem a šifrováním; náhrada starších průmyslových sběrnic."],
+ ["BACnet/IP","iot","L7","UDP","47808","ISO 16484-5","Řízení budov — vzduchotechnika, osvětlení, měření."]
+];
+const T1=new Set(["HTTP/1.1","DNS","DHCP","ARP","NDP","TCP","UDP","QUIC","IPv4","IPv6","ICMP","TLS 1.3","SSH","SMTP","IMAP","Ethernet II","802.11","802.1Q","OSPF","BGP"]);
+const T3=new Set(["gRPC","HLS / DASH","WebDAV","WHOIS / RDAP","IS-IS","BFD","DCCP","VNC / RFB","PTP","SDP","RTSP","NVMe/TCP","CoAP","AMQP","Modbus TCP","OPC UA","BACnet/IP","RIPv2","Telnet","POP3"]);
+const tier=n=>T1.has(n)?1:(T3.has(n)?3:2);
+const tb=$("#tbody"); let gf="all", sortKey=null, sortDir=1, keyOnly=false;
+$("#grpFilter").innerHTML=`<button class="tab" data-g="all" aria-pressed="true">vše</button>`+
+  GRP.map(g=>`<button class="tab" data-g="${g[0]}" aria-pressed="false">${g[1]}</button>`).join("");
+function renderTable(){
+  const q=$("#q").value.trim().toLowerCase();
+  let rows=ROWS.filter(r=>(gf==="all"||r[1]===gf)&&(!keyOnly||tier(r[0])===1)&&(!q||r.join(" ").toLowerCase().includes(q)));
+  const grouped = sortKey===null;
+  if(!grouped) rows=rows.slice().sort((a,b)=>String(a[sortKey===0?0:sortKey]).localeCompare(String(b[sortKey===0?0:sortKey]),"cs",{numeric:true})*sortDir);
+  const cell=r=>`<tr class="t${tier(r[0])}"><td class="n">${r[0]}</td><td class="m">${r[2]}</td><td class="m">${r[3]}</td><td class="m">${r[4]}</td><td class="m">${r[5]}</td><td>${r[6]}</td></tr>`;
+  let html="";
+  if(grouped){
+    GRP.forEach(g=>{
+      const part=rows.filter(r=>r[1]===g[0]);
+      if(!part.length) return;
+      html+=`<tr class="grp"><td colspan="6"><b>${g[1]}</b> &nbsp;<span>${g[2]}</span></td></tr>`+part.map(cell).join("");
+    });
+  } else html=rows.map(cell).join("");
+  tb.innerHTML=html||`<tr><td colspan="6" style="color:var(--ink-2)">nic nevyhovuje</td></tr>`;
+  const nk=rows.filter(r=>tier(r[0])===1).length;
+  $("#count").textContent=`${rows.length} z ${ROWS.length} položek · ${nk} ze základu`;
+}
+const SKEY={"0":0,"1":2,"2":3,"3":4,"4":5};
+$$("thead th[data-s]").forEach(th=>th.addEventListener("click",()=>{
+  const k=SKEY[th.dataset.s];
+  sortDir = sortKey===k ? -sortDir : 1; sortKey=k; renderTable();
+}));
+$$("[data-g]").forEach(b=>b.addEventListener("click",()=>{
+  gf=b.dataset.g; sortKey=null; $$("[data-g]").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); renderTable();
+}));
+$("#q").addEventListener("input",renderTable);
+$("#onlyKey").addEventListener("click",()=>{
+  keyOnly=!keyOnly; $("#onlyKey").setAttribute("aria-pressed",String(keyOnly)); renderTable();
+});
+renderTable();
+
+const h=location.hash.replace("#","");
+if(h&&document.getElementById(h)) document.getElementById(h).scrollIntoView();
+})();
+</script>
+</body>
+</html>
